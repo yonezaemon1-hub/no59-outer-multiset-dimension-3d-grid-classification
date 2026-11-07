@@ -1,0 +1,327 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=18.5mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern,microtype}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs,array,longtable,enumitem}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,urlcolor=blue!45!black,citecolor=blue!45!black]{hyperref}
+\usepackage{xcolor}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\newcommand{\odim}{\operatorname{odim}}
+\newcommand{\dm}{\operatorname{d}}
+\newcommand{\MS}{\operatorname{M}}
+\newcommand{\dist}{\operatorname{dist}}
+\newcommand{\boxp}{\mathbin{\square}}
+\newcommand{\Zn}[1]{\{0,\ldots,#1\}}
+\newcommand{\Status}{\textsf{PREPRINT --- VERSION 1.0}}
+\hypersetup{pdftitle={Outer Multiset Dimension of Three-Dimensional Grids: A Universal Lower Bound and an Exact Two-Parameter Classification},pdfauthor={Ryutaro Yonezu}}
+\title{\bfseries Outer Multiset Dimension of Three-Dimensional Grids:\\[3pt] A Universal Lower Bound and an Exact Two-Parameter Classification}
+\author{Ryutaro Yonezu\\\small Independent Researcher}
+\date{8 November 2026\\[4pt]\small No. 59 / Version 1.0}
+\begin{document}
+\maketitle
+\begin{center}\fcolorbox{gray!55}{gray!7}{\parbox{0.91\linewidth}{\centering\small\textbf{\Status}\\\vspace{2pt}
+Independent AI audit: PASS within the author-reported Rev2 differential scope.\\
+Windows PowerShell 5.1: author-reported PASS for frozen v0.5 finite computation.\\
+REFERENCES PARTIAL. NOVELTY INCONCLUSIVE. Not human peer-reviewed. All rights reserved.}}
+\end{center}
+\begin{abstract}
+For a connected graph, the outer multiset dimension is the minimum number of landmarks required to distinguish vertices outside the landmark set by \emph{unordered} multisets of their distances to those landmarks. We give an analytic lower-bound argument for three-dimensional Cartesian grids: $\odim(P_a\boxp P_b\boxp P_c)\ge4$ whenever $a,b,c\ge2$. The proof constrains ordinary three-landmark resolving sets by local signed determinants, reduces them to four symmetry types, and exhibits an exterior multiset-distance collision in every type. We also give a uniform four-landmark construction for $P_2\boxp P_m\boxp P_n$ when $n\ge6$, verified analytically using the sum and centered second moment of four distances. A computer-assisted exhaustive classification of ten small grids gives, for $2\le m\le n$, the exact formula
+\[
+\odim(P_2\boxp P_m\boxp P_n)=
+\begin{cases}
+4,&n\ge6\text{ or }(m,n)\in\{(2,5),(4,5)\},\\
+5,&\text{otherwise}.
+\end{cases}
+\]
+The short-grid certificates use separate C++17 Manhattan-distance and Python breadth-first-search implementations. This preprint extends the author's previously released $P_2\boxp P_3\boxp P_n$ result, which is cited rather than presented as independent prior-free work. The claim is a partial response to the multi-path extension problem in the literature, not a solution for all multidimensional grids. Novelty and complete literature coverage have not been established.
+\end{abstract}
+\noindent\textbf{Keywords:} outer multiset dimension; metric dimension; Cartesian products; three-dimensional grid; computer-assisted proof.\\
+\textbf{MSC (2020):} 05C12, 05C76.
+
+\section{Introduction}
+Let $P_r$ be a path on $r$ vertices. Klav\v{z}ar, Kuziak and Yero proved that the outer multiset dimension of $P_s\boxp P_t$ is three for $s,t\ge2$ and asked for extensions to products of several paths \cite{Klavzar2023}. Farhan, Klav\v{z}ar, Kuziak and Yero retained this direction as Problem~10 in their 2026 survey \cite{Farhan2026}. We address two restricted but infinite three-dimensional questions: a lower bound for all three-path grids, and an exact classification when one factor is $P_2$.
+
+This parameter is not the ordinary (ordered) metric dimension. In particular, Mora, Souto-Salorio and Tarr\'{\i}o-Tobar proved that the standard metric dimension of a three-dimensional grid is three, using ordered distance vectors \cite{Mora2022}; deleting landmark labels changes the identification problem. The outer multiset concept originates in \cite{GilPons2019} and has subsequent general developments such as \cite{Araujo2026}.
+
+The author's No.~58 preprint, publicly released on GitHub as v1.0 on 7 November 2026 \cite{Yonezu58}, established $\odim(P_2\boxp P_3\boxp P_n)=4$ for $n\ge6$ with a different computer-assisted argument. Here this is explicitly a \emph{special case} of the classification, and an overlapping corner/edge collision pattern is credited as reused. The present argument proposes a stronger, shape-independent lower bound and a larger two-parameter exact family. We make no assertion of priority or uniqueness of discovery. Full citation-network and general-theorem implication checks remain outstanding.
+
+\section{Definitions and statements}
+Write
+\[
+G(a,b,c)=P_a\boxp P_b\boxp P_c,\qquad
+V(G)=\Zn{a-1}\times\Zn{b-1}\times\Zn{c-1},
+\]
+with $\dm((x,y,z),(x',y',z'))=|x-x'|+|y-y'|+|z-z'|$. For $S\subseteq V(G)$ put
+\[
+\MS_S(v)=\{\!\{\dm(v,s):s\in S\}\!\},
+\]
+where multiplicities are retained and order discarded. The set $S$ is \emph{outer multiset resolving} if $\MS_S(u)\ne\MS_S(v)$ for distinct $u,v\notin S$; $\odim(G)$ is the smallest cardinality of such a set.
+
+\begin{theorem}[Universal three-dimensional lower bound]\label{thm:lower}
+For all integers $a,b,c\ge2$,
+\[\odim(G(a,b,c))\ge4.\]
+\end{theorem}
+
+\begin{theorem}[Complete $P_2$-width classification]\label{thm:classification}
+For integers $2\le m\le n$,
+\[
+\odim(P_2\boxp P_m\boxp P_n)=
+\begin{cases}
+4,& n\ge6\text{ or }(m,n)\in\{(2,5),(4,5)\},\\
+5,& \text{otherwise}.
+\end{cases}
+\]
+\end{theorem}
+The infinite portion of Theorem~\ref{thm:classification} is analytic. The ten cases $n\le5$ are supported by exact finite exhaustive computation and explicit witnesses; see Section~\ref{sec:finite}.
+
+\section{An analytic obstruction for three landmarks}\label{sec:lower}
+Set $A=a-1$, $B=b-1$, $C=c-1$, so $A,B,C\ge1$. If $S=(s_1,s_2,s_3)$ is outer multiset resolving, then it is ordinary \emph{ordered} resolving. Indeed, an equality of ordered distance triples between distinct vertices cannot involve a landmark: the distance to that landmark is zero for one endpoint but positive for the other. Any ordinary ordered-distance collision is thus exterior and is also an unordered collision. We will classify necessary forms of ordinary three-point resolving sets and rule out each form for outer multiset resolution.
+
+\subsection{Local signed determinant lemma}
+For each coordinate direction $i\in\{x,y,z\}$ and each integer cut $j\to j+1$, the ordered distance map
+$F(v)=(\dm(v,s_1),\dm(v,s_2),\dm(v,s_3))$
+has edge increment $g_i(j)\in\{-1,1\}^{3}$, with entry $+1$ when the corresponding landmark's $i$-coordinate is at most $j$ and $-1$ otherwise. The three edge increments of an elementary cube are columns of $M_Q=[g_x\ g_y\ g_z]$.
+
+\begin{lemma}[Local orientation]\label{lem:orient}
+If $F$ is injective on all vertices, then $\det M_Q\in\{-4,4\}$ on every elementary cube, and the sign of this determinant is the same on all cubes.
+\end{lemma}
+\begin{proof}
+There are four sign classes in $\{-1,1\}^{3}$ modulo $v\sim-v$. If two columns of $M_Q$ belong to the same class, the two corresponding directions form a square on which either opposite corners $(0,0),(1,1)$, or corners $(1,0),(0,1)$, have the same ordered distance vector. Hence the columns occupy three distinct classes. A $3\times3$ sign matrix with three distinct column classes has determinant $+4$ or $-4$.
+
+For adjacent cubes along one direction, write their matrices as $[a\ b\ c]$ and $[a\ b\ d]$. If their nonzero determinants have opposite signs, component sign changes and permutations normalize the common columns to $a=(1,1,1)$ and $b=(1,1,-1)$. Since $\det[a\ b\ c]=2(c_2-c_1)$, the sign reversal forces $c_1=-c_2$, $d_1=-d_2$ and $d_1=-c_1$. Thus $c+d=0$ or $c+d=(0,0,\pm2)$ in this normalization. Undoing the normalization gives
+\[c+d\in\{0,\pm(a+b),\pm(a-b)\}.\]
+In the two-cube patch $\{0,1\}^2\times\{0,1,2\}$, the increment in $F$ between opposite external faces is $c+d$ plus a horizontal increment. In each of the five possibilities there is a pair of distinct vertices with equal images:
+\[
+\begin{array}{c|c}
+ c+d & \text{equal-image vertices }(p,q,z)\\\hline
+0 &(0,0,2),(0,0,0)\\
+a+b&(0,0,2),(1,1,0)\\
+-(a+b)&(1,1,2),(0,0,0)\\
+a-b&(0,1,2),(1,0,0)\\
+-(a-b)&(1,0,2),(0,1,0).
+\end{array}
+\]
+This contradicts injectivity. Adjacent-cube connectivity propagates a single determinant sign through the grid.
+\end{proof}
+
+\subsection{Classification by four sign classes}
+For axis $i$, let $C_i$ consist of the sign classes attained by $g_i(j)$ over all its cuts. Every triple of cuts determines a cube, so Lemma~\ref{lem:orient} implies that $C_x,C_y,C_z$ are nonempty and pairwise disjoint. Since altogether there are only four classes, at most one axis can use more than one class, and even that axis can use at most two. An axis using one class cannot employ both $v$ and $-v$ at different cuts, because this reverses the determinant sign with the other axes held fixed. Its \emph{actual} gradient is constant, which means all landmarks have an endpoint coordinate on that axis.
+
+After permuting axes, only $z$ may contain an internal landmark coordinate. Along successive $z$ cuts every component of $g_z$ changes from $-1$ to $+1$ at most once and never returns. Since only two actual vectors are allowed, at most one distinct internal $z$ level is occupied. If $r\in\{2,3\}$ landmarks share this level, let $c$ and $d$ be the gradients before and after it, and let $a,b$ be the fixed gradients on the other axes. Lemma~\ref{lem:orient} gives
+\[\det[a\ b\ c]=\det[a\ b\ d]=\pm4,
+\quad\Longrightarrow\quad \det[a\ b\ (c+d)]=\pm8.
+\]
+If $r=3$, then $c+d=0$. If $r=2$, exactly one component of $c+d$ is nonzero and equals $\pm2$; expansion by this column gives $\det[a\ b\ (c+d)]\in\{0,\pm4\}$ because a $2\times2$ sign determinant belongs to $\{0,\pm2\}$. Both possibilities contradict $\pm8$. Thus \emph{at most one landmark lies at an internal coordinate}, and it must lie on an edge of the box.
+
+If all three landmarks are corners, a corner triple is possible only if it contains no antipodal pair: if two selected corners were antipodal, then the three axis gradients would have only two available sign classes, forcing a repeated class and a square collision. There are $\binom83-4\cdot6=32$ such triples. Up to axis permutations and coordinate reflections, they have two representatives
+\begin{align*}
+\mathrm{I\!a}:&\quad S=\{(0,0,0),(A,0,0),(0,B,0)\},\\
+\mathrm{I\!b}:&\quad S=\{(0,0,0),(A,B,0),(A,0,C)\}.
+\end{align*}
+If one landmark is on the interior of an edge, we may put it at $E=(0,0,k)$, $1\le k<C$. Write the gradients on the other two axes as $a=(1,\alpha,\alpha')$, $b=(1,\beta,\beta')$ and those around the internal level as $c_{\pm}=(\pm1,\gamma,\gamma')$. Since the determinants before and after are equal,
+\[0=\det[a\ b\ (c_+-c_-)]=2(\alpha\beta'-\alpha'\beta).\]
+Nonvanishing excludes $a=b$; hence $(\beta,\beta')=-(\alpha,\alpha')$. The remaining determinant is
+\[\det[a\ b\ c_+]=\det[a\ b\ c_-]=2(\alpha'\gamma-\alpha\gamma'),\]
+which is nonzero only for four choices of the two corners: $(0,B,0),(0,B,C)$; $(A,0,0),(A,0,C)$; $(0,B,0),(A,0,0)$; or $(0,B,C),(A,0,C)$. Under reflection and $x/y$ exchange these become two representatives:
+\begin{align*}
+\mathrm{II\!a}:&\quad S=\{(0,0,k),(0,B,0),(0,B,C)\},\\
+\mathrm{II\!b}:&\quad S=\{(0,0,k),(0,B,0),(A,0,0)\}.
+\end{align*}
+We have proved a \emph{necessary} four-orbit classification, independent of any finite search. For context, the resulting count of potentially ordinary-resolving three-point sets is $32+16[(a-2)+(b-2)+(c-2)]=16(a+b+c-4)$. Only necessity is used below; no novel enumeration theorem is asserted.
+
+\subsection{Exterior collisions for all four types}\label{sec:witnesses}
+We supply witnesses $u\ne v$ outside the indicated set $S$ with $\MS_S(u)=\MS_S(v)$. Every variable $A,B,C$ is a positive integer, and in types II $1\le k<C$. All displayed coordinate values are integral under their branch hypotheses. The formulas are grouped by parity and relative length; they can be checked directly using the Manhattan distance.
+
+\paragraph{Type I-a.} If $A=2h$ is even, take
+$u=(h-1,0,1)$, $v=(h+1,1,0)$.
+If $A$ is odd and $B=2h$ is even, take
+$u=(0,h-1,1)$, $v=(1,h+1,0)$.
+If $A,B$ are both odd, take
+\[u=\bigl((A+1)/2,(B-1)/2,1\bigr),\qquad
+  v=\bigl((A-1)/2,(B+1)/2,1\bigr).
+\]
+The three landmark distances are equal as multisets, with the relevant entries transposed.
+
+\paragraph{Type I-b.} The distances of $(x,y,z)$, in landmark order, are
+\[D(x,y,z)=(x+y+z,\ A+B-x-y+z,\ A+C-x+y-z).\]
+At least one of $A+B,A+C,B+C$ is even. Use the first applicable alternative:
+\begin{enumerate}[label=(\roman*),leftmargin=2.2em]
+\item If $A+B$ is even, set $H=(A+B)/2$.
+For $A\le B$, take $u=(0,(B-A)/2,1)$ and $v=(A,H,1)$; for $A>B$, take $u=((A-B)/2,0,1)$ and $v=(H,B,1)$. The first two entries of $D$ are exchanged.
+\item Otherwise, if $A+C$ is even, set $H=(A+C)/2$.
+For $A\le C$, take $u=(0,1,(C-A)/2)$ and $v=(A,1,H)$; for $A>C$, take $u=((A-C)/2,1,0)$ and $v=(H,1,C)$. The first and third entries are exchanged.
+\item Otherwise, $B+C$ is even. Set $\Delta=(B-C)/2$.
+For $\Delta\ge0$, take $u=(0,\Delta,1)$ and $v=(0,\Delta+1,0)$; for $\Delta<0$, take $u=(0,0,1-\Delta)$ and $v=(0,1,-\Delta)$. The second and third entries are exchanged.
+\end{enumerate}
+The coordinate inequalities follow from $\min(A,B)\le H\le\max(A,B)$, its $A,C$ analogue, and $B,C\ge1$ in the last branch.
+
+\paragraph{Type II-a.} Here
+\[D(x,y,z)=(x+y+|z-k|,\ x+B-y+z,\ x+B-y+C-z).\]
+If $C=2h$ is even, take
+\[
+\begin{array}{c|l|l}
+ &u&v\\\hline
+k<h&(1,1,h-1)&(0,0,h+1)\\
+k=h&(1,0,h-1)&(1,0,h+1)\\
+k>h&(0,0,h-1)&(1,1,h+1)
+\end{array}
+\]
+(the second and third distance entries are exchanged). If $C$ is odd, distinguish:
+\begin{enumerate}[label=(\roman*),leftmargin=2.2em]
+\item $k\equiv B\pmod2$: set $\Delta=(k-B)/2$, $z=\max(1,\Delta+1)$, $y=z-\Delta-1$; take $u=(1,y,z)$, $v=(1,y+1,z-1)$. These lie at $z\le k$ and interchange the first and second distance entries.
+\item $k\not\equiv B\pmod2$: as $C$ is odd, $k\equiv B+C\pmod2$. Put $H=(B+C+k-2)/2$, $z=\min(C-1,H)$, $y=H-z$; take $u=(1,y,z)$, $v=(1,y+1,z+1)$. These lie at $z\ge k$ and interchange the first and third entries.
+\end{enumerate}
+In the latter branch $k\le H\le B+C-2$. In the former, whether $\Delta$ is negative or not, $1\le z\le k$ and $0\le y\le B-1$. The $x=1$ coordinates keep both vertices outside $S$.
+
+\paragraph{Type II-b.} For $z\le k$ the distances are
+\[D(x,y,z)=(x+y+k-z,\ x+B-y+z,\ A-x+y+z).\]
+Use the first applicable alternative:
+\begin{enumerate}[label=(\roman*),leftmargin=2.2em]
+\item $k\equiv B\pmod2$: put $\Delta=(k-B)/2$, $z=\max(1,\Delta+1)$, $y=z-\Delta-1$; take $u=(1,y,z)$, $v=(1,y+1,z-1)$, interchanging entries $1,2$.
+\item Otherwise $k\equiv A\pmod2$: put $\Delta=(k-A)/2$, $z=\max(1,\Delta+1)$, $x=z-\Delta-1$; take $u=(x,1,z)$, $v=(x+1,1,z-1)$, interchanging entries $1,3$.
+\item Otherwise $A\equiv B\pmod2$: put $\Delta=(B-A)/2$, $y=\max(1,\Delta+1)$, $x=y-\Delta-1$; take $u=(x,y,1)$, $v=(x+1,y-1,1)$, interchanging entries $2,3$.
+\end{enumerate}
+These branches cover all parity assignments among $k,A,B$. The same bounds as in II-a give $z-1\ge0$, $z\le k$ when $z$ is used, and the relevant $x,x+1\in[0,A]$ or $y,y+1\in[0,B]$; $z=1\le k$ in the last branch. In all cases the two vertices are distinct and avoid the three landmarks.
+
+Each case has a fixed permutation of the three distance entries, so each identity is an equality of affine forms in $A,B,C,k$ (with the active parity and min/max branch fixed). The archived v0.6 checker separately verifies 22 such coefficient identities and their finite-domain coordinate checks. These computations are supplementary to the inequalities and symbolic substitutions given above, not a substitute for proving every integer parameter case.
+
+\paragraph{All-parameter coordinate audit (new supplemental certificate).}
+For transparency, the finite-domain checks alone are not extrapolated to arbitrary
+edge lengths.  An additional, non-frozen certificate
+\path{supplement/verify_exact_22_bounds.py} imports the frozen v0.6 affine
+witness definitions, partitions them into the 22 stated branches, and minimizes
+\emph{exact rational linear forms} under the corresponding linear inequalities.
+It checks all 12 lower/upper coordinate inequalities for two three-dimensional
+witnesses in every branch (264 conditions), seven uniform separations per
+branch (154 conditions: distinct witnesses and both witnesses outside the three
+landmarks), and 26 absolute-value sign constraints.  The branch inequalities
+are conservative real relaxations of the parity-restricted integer domains;
+thus a lower bound valid over the relaxed domain is valid for all permitted
+integer parameters.  Each resulting minimum meets the required threshold.
+Exact affine distance-permutation identities are checked separately by the
+unchanged v0.6 symbolic verifier.  Integer-valued coordinates follow from the
+explicit parity hypotheses.  These two checks together corroborate the
+all-parameter witness construction; the new range certificate is a separate
+computer-assisted argument, not a claim of a fully formalized or independently
+hand-written proof of every inequality.  A per-branch domain table and
+reproduction commands appear in the supplementary audit note.
+
+\begin{proof}[Proof of Theorem~\ref{thm:lower}]
+A set with three landmarks would be ordinary resolving and hence belong, up to grid symmetries, to one of the four types. Every type has an exterior unordered-distance collision by Section~\ref{sec:witnesses}; contradiction. No set of at most two landmarks is ordinarily resolving: on a unit cube each coordinate direction has a sign increment in $\{-1,1\}^2$ and there are only two classes modulo negation, so two of the three axes give equal or opposite columns and hence a diagonal collision on their elementary square. This is exterior for the same zero-distance reason. Thus $\odim(G)\ge4$.
+\end{proof}
+
+\section{A uniform four-landmark upper bound}\label{sec:upper}
+\begin{proposition}\label{prop:upper}
+For $m\ge2,n\ge6$, the four landmarks
+\[S_n=\{(0,0,0),(1,0,0),(0,0,n-3),(0,0,n-1)\}\]
+distinguish \emph{every} vertex of $P_2\boxp P_m\boxp P_n$ by its unordered distance multiset. In particular, $\odim(P_2\boxp P_m\boxp P_n)\le4$.
+\end{proposition}
+\begin{proof}
+Put $L=n-3\ge3$, $q=x+y$ and $\varepsilon=1-2x\in\{+1,-1\}$. For $0\le z\le L+2$ the four distances, in the displayed landmark order, are
+\[d_i=q+t_i,\qquad(t_1,t_2,t_3,t_4)=(z,z+\varepsilon,|z-L|,L+2-z).\]
+Use the permutation-invariant quantities
+\[R=\sum_{i=1}^{4}d_i\pmod4,\qquad W=4\sum_{i=1}^{4}d_i^2-\Big(\sum_{i=1}^{4}d_i\Big)^2.\]
+Both ignore the common shift $q$ (for $R$, since there are four terms). Direct expansion yields the six states in Table~\ref{tab:moments}, where I denotes $0\le z\le L$, II denotes $z=L+1$, and III denotes $z=L+2$.
+\begin{table}[ht]\centering\small
+\caption{Shift-invariant summaries; $+$ means $x=0$ and $-$ means $x=1$.}\label{tab:moments}
+\begin{tabular}{@{}ccl@{}}\toprule
+State & $R\bmod4$ & $W$\\\midrule
+I$+$ & $2L+3$ & $4L^2+4L+11+16z^2-16Lz-8z$\\
+I$-$ & $2L+1$ & $4L^2+12L+19+16z^2-16Lz-24z$\\
+II$+$ & $2L+1$ & $4L^2+4L+3$\\
+II$-$ & $2L+3$ & $4L^2-4L+3$\\
+III$+$ & $2L+3$ & $4L^2+12L+19$\\
+III$-$ & $2L+1$ & $4L^2+4L+11$\\\bottomrule
+\end{tabular}
+\end{table}
+
+The residue $R$ divides states into $\{\mathrm{I+},\mathrm{II-},\mathrm{III+}\}$ and $\{\mathrm{I-},\mathrm{II+},\mathrm{III-}\}$. For two different $z,z'$ in the same I state,
+\[W_I(\varepsilon,z)-W_I(\varepsilon,z')=8(z-z')\bigl[2(z+z'-L-1)+\varepsilon\bigr]\ne0,\]
+because the bracket is odd. Between I and III within the same residue class we have
+\[
+W_{\mathrm{I+}}(z)-W_{\mathrm{III+}}=8(2z+1)(z-L-1),\quad
+W_{\mathrm{I-}}(z)-W_{\mathrm{III-}}=8(2z-1)(z-L-1),
+\]
+neither of which vanishes for integer $0\le z\le L$. Likewise the differences II$-$ minus III$+$ and II$+$ minus III$-$ are $-16(L+1)$ and $-8$, respectively.
+
+It remains to compare I with II. The relevant differences, divided by eight, are
+\begin{align*}
+f(z)&=2z^2-(2L+1)z+L+1,& W_{\mathrm{I+}}-W_{\mathrm{II-}}&=8f(z),\\
+g(z)&=2z^2-(2L+3)z+L+2,& W_{\mathrm{I-}}-W_{\mathrm{II+}}&=8g(z).
+\end{align*}
+Here $f(0)=L+1>0$ and $f(L)=1>0$, while $f(1)=2-L<0$ and $f(L-1)=4-2L<0$. Since $f$ is convex, it is negative for all real $1\le z\le L-1$; no integer in $[0,L]$ is a zero. Similarly $g(0)=L+2>0$ while $g(1)=1-L<0$ and $g(L)=2-2L<0$, so $g$ is negative on $[1,L]$ by convexity and has no integer zero in $[0,L]$.
+
+Consequently $(R,W)$ uniquely determines $(\varepsilon,z)$ and hence $(x,z)$. Once these are known, $\sum_i d_i=4q+\sum_i t_i$ determines $q$ and hence $y=q-x$. Thus the unordered distance multiset distinguishes every vertex, proving the proposition.
+\end{proof}
+
+\section{Ten short grids: finite exact certificates}\label{sec:finite}
+When $2\le m\le n\le5$, there are precisely ten parameter pairs. The frozen v0.5 evidence contains (i) a C++17 exhaustive search using Manhattan distances and sorted distance signatures; (ii) an independently written Python implementation using graph BFS distances and separate signature construction; and (iii) a C++17 complete count of the successful four-point subsets in the two exceptional grids. Both main implementations agree on the minimum cardinality and the explicit witnesses.
+
+\begin{table}[ht]\centering
+\caption{Computed $\odim(P_2\boxp P_m\boxp P_n)$ for the ten small cases.}\label{tab:small}
+\begin{tabular}{c@{\qquad}cccc}\toprule
+$m\backslash n$ &2&3&4&5\\\midrule
+2&5&5&5&4\\
+3&--&5&5&5\\
+4&--&--&5&4\\
+5&--&--&--&5\\\bottomrule
+\end{tabular}
+\end{table}
+
+For the eight cases having value five, the verifier exhausts all subsets of cardinality at most four and provides a successful five-point set. In the largest case $P_2\boxp P_5\boxp P_5$, all $\binom{50}{4}=230{,}300$ four-point subsets fail. For the two exceptional cases, independent full counts identify exactly $16$ successful four-subsets in $(m,n)=(2,5)$ and $8$ in $(4,5)$. The finite classification also searches all smaller landmark-set cardinalities, so its proof does not rely on Theorem~\ref{thm:lower}.
+
+The exact five-landmark witnesses, and the exceptional four-landmark witnesses, appear in Appendix~\ref{app:witness}. These computational claims have reproducible integer-arithmetic certificates rather than a printed manual enumeration of hundreds of thousands of sets.
+
+\begin{proof}[Proof of Theorem~\ref{thm:classification}]
+If $n\ge6$, Theorem~\ref{thm:lower} and Proposition~\ref{prop:upper} give equality at four. For $n\le5$, Table~\ref{tab:small} follows from the finite exhaustive certificates and corresponding positive witnesses. These ten cases are all possibilities with $2\le m\le n\le5$. This yields the formula.
+\end{proof}
+
+\section{Reproducibility, scope and relationship to prior work}
+\subsection{Frozen computational evidence}
+The reproducibility archive contains byte-identical computational files selected from the frozen v0.5 archive (original SHA256 prefix \texttt{4372e433610d7809}). The two C++17 programs and independent Python BFS verifier are run by \texttt{REPRODUCE.sh} on Linux and \texttt{run\_windows.ps1} on Windows. The author reports a Windows PowerShell 5.1 PASS for the frozen v0.5 finite computation.
+
+A later archived, \emph{non-frozen-core} v0.6 supplement checks 4,096 local sign configurations, 22 algebraic witness-identity branches and six moment-state polynomial identities. These supplementary checks are not replacements for the analytic inequalities. An unexplained historical count of $101{,}250$ is excluded from the evidentiary statistics. Old v0.2 scripts are not included as release evidence. The public archive contains Linux reproduction evidence.
+
+\subsection{No.58 and novelty boundary}
+No.~58 \cite{Yonezu58} established the $m=3,n\ge6$ subfamily and appeared as a v1.0 preprint on GitHub and Zenodo on 7 November 2026. Its version DOI is \url{https://doi.org/10.5281/zenodo.24024946}. No.~58\textquotesingle s $B(t)$ landmark family and its even-$N$ interior collision witnesses coincide with the corresponding part of the earlier No.~59 F3 (x-type) construction. These are the width-two, width-three specialization of Type II-a after reflecting and exchanging the two transverse coordinates. We credit the shared construction to No.~58. The present preprint gives a universal lower bound for three nontrivial path factors and a full $P_2\boxp P_m\boxp P_n$ classification, including exceptional small sizes.
+
+Klav\v{z}ar--Kuziak--Yero's Problem~6.3 and Farhan et al.'s Problem~10 ask for extensions of the two-path case to more factors. The present theorem is \emph{not} a determination of $\odim(P_a\boxp P_b\boxp P_c)$ for all $a,b,c$, nor a solution for products of four or more paths. The recent toroidal-grid classification of Peng \cite{Peng2026} concerns two cycles rather than three paths, while the 2026 survey of Albejani et al. \cite{Albejani2026} discusses related multiset-dimension variants. Neither is asserted to prove the present three-path classification. Related nomenclature, broader theorems with implicit consequences, papers appearing after the cited surveys, and complete citation networks have not been exhaustively ruled out. Thus \textbf{NOVELTY INCONCLUSIVE; REFERENCES PARTIAL} are maintained.
+
+\subsection{Research status and rights}
+The author reports an independent AI audit PASS for the Rev2 differential review, covering mathematical invariance, the 23-file manifest, reproduction of frozen v0.5 and v0.6, and the 22-branch SymPy certificate. The certificate covers 264 coordinate bounds, 154 distinctness and exteriority conditions, and 26 absolute-value sign checks. The author-reported Windows PowerShell 5.1 PASS covers the frozen v0.5 finite computation. The proof combines analytic arguments and computer-assisted certificates. REFERENCES PARTIAL. NOVELTY INCONCLUSIVE. Not human peer-reviewed. Copyright \copyright\ 2026 Ryutaro Yonezu. All rights reserved.
+
+\appendix
+\section{Explicit witnesses for the short-grid table}\label{app:witness}
+All vertices are written as $(x,y,z)$ and use zero-based coordinates. For the two exceptional value-four cases, successful four-point sets are
+\begin{align*}
+(m,n)=(2,5):\quad &\{(0,0,0),(0,0,4),(0,1,1),(1,1,1)\},\\
+(m,n)=(4,5):\quad &\{(0,0,0),(0,0,4),(1,0,1),(1,3,1)\}.
+\end{align*}
+For the eight cases of value five, the archived verifier records the following five-point witnesses:
+\begin{align*}
+(2,2):&\ \{(0,0,0),(0,0,1),(0,1,0),(1,0,1),(1,1,0)\},\\
+(2,3):&\ \{(0,0,0),(0,0,1),(0,1,0),(0,1,2),(1,0,1)\},\\
+(2,4):&\ \{(0,0,0),(0,0,1),(0,0,2),(0,1,0),(0,1,3)\},\\
+(3,3):&\ \{(0,0,0),(0,0,1),(0,0,2),(1,0,0),(1,2,0)\},\\
+(3,4):&\ \{(0,0,0),(0,0,1),(0,0,2),(1,0,0),(1,0,3)\},\\
+(3,5):&\ \{(0,0,0),(0,0,1),(0,0,2),(0,0,4),(0,2,1)\},\\
+(4,4):&\ \{(0,0,0),(0,0,1),(0,0,2),(0,1,3),(0,3,0)\},\\
+(5,5):&\ \{(0,0,0),(0,0,1),(0,0,2),(0,0,4),(0,4,1)\}.
+\end{align*}
+
+\begin{thebibliography}{99}\small
+\bibitem{GilPons2019} R. Gil-Pons, Y. Ram\'{\i}rez-Cruz, R. Trujillo-Rasua and I. G. Yero, \emph{Distance-based vertex identification in graphs: The outer multiset dimension}, Applied Mathematics and Computation \textbf{363} (2019), 124612. \url{https://doi.org/10.1016/j.amc.2019.124612}.
+\bibitem{Klavzar2023} S. Klav\v{z}ar, D. Kuziak and I. G. Yero, \emph{Further contributions on the outer multiset dimension of graphs}, Results in Mathematics \textbf{78} (2023), article 50. \url{https://doi.org/10.1007/s00025-022-01829-8}.
+\bibitem{Mora2022} M. Mora, M. J. Souto-Salorio and A. D. Tarr\'{\i}o-Tobar, \emph{Resolving sets tolerant to failures in three-dimensional grids}, Mediterranean Journal of Mathematics \textbf{19} (2022), article 188. \url{https://doi.org/10.1007/s00009-022-02096-1}.
+\bibitem{Farhan2026} M. Farhan, S. Klav\v{z}ar, D. Kuziak and I. G. Yero, \emph{Multiset resolvability parameters in graphs: A survey with new results and open problems}, arXiv:2607.10311v1 (2026), Problem 10. \url{https://arxiv.org/abs/2607.10311}.
+\bibitem{Araujo2026} G. Araujo-Pardo, C. Dalf\'{o}, M. Olsen, M. A. Reyes and R. Simanjuntak, \emph{On the outer multiset dimensions of graphs}, Bolet\'{\i}n de la Sociedad Matem\'{a}tica Mexicana \textbf{32} (2026), article 142. \url{https://doi.org/10.1007/s40590-026-00973-3}.
+\bibitem{Peng2026} B. Peng, \emph{The Outer Multiset Dimension of Toroidal Grids}, arXiv:2609.20073 (2026). \url{https://arxiv.org/abs/2609.20073}.
+\bibitem{Albejani2026} A. Albejani, Y. Lin, J. Ryan and K. A. Sugeng, \emph{A Survey on Multiset Dimension and Its Variations}, Statistics, Optimization \& Information Computing \textbf{16} (2026), 4960--4988. \url{https://doi.org/10.19139/soic-2310-5070-4062}.
+\bibitem{Yonezu58} R. Yonezu, \emph{Exact Outer Multiset Dimension of the Three-Dimensional Grid Family $P_2\boxp P_3\boxp P_n$}, No. 58, v1.0 preprint (7 November 2026). Public GitHub Release: \url{https://github.com/yonezaemon1-hub/no58-outer-multiset-dimension-3d-grid/releases/tag/v1.0}. Zenodo version DOI: \url{https://doi.org/10.5281/zenodo.24024946}.
+\end{thebibliography}
+\end{document}
