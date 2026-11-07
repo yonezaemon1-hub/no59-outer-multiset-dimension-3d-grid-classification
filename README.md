@@ -46,3 +46,5 @@ The public bundle uses new manifests for its selected files. The v0.5 and v0.6 v
 ## Cite
 
 Ryutaro Yonezu (2026). *Outer Multiset Dimension of Three-Dimensional Grids: A Universal Lower Bound and an Exact Two-Parameter Classification*. Research No.59, preprint v1.0.
+
+[Zenodo record](https://zenodo.org/records/24045061) · [Version DOI 10.5281/zenodo.24045061](https://doi.org/10.5281/zenodo.24045061)
